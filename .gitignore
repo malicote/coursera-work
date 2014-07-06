@@ -1,0 +1,4 @@
+*.txt
+*.o
+*.out
+.DS_STORE

@@ -1,0 +1,20 @@
+Short readme on the following contents.
+
+These sub-folders were merged from a different set
+of folders and therefore lost a lot of history.
+
+These are all projects for algorithms-I.  Most are
+in python, some in C.
+
+Currently:
+
+1. Counting inversions.  Given a list of numbers, count
+   the number of inversions.
+
+2. A randomized quick sort implementation in Python.
+
+3. A selection algorithm to find Nth smallest number.
+
+4. Min-cut algorithm.  Given a txt file describing a
+   non unidirectional graph, finds the minimum cut
+   of the graph. 
