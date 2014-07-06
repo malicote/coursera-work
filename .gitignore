@@ -1,4 +1,5 @@
 *.txt
 *.o
 *.out
+*.swp
 .DS_STORE
