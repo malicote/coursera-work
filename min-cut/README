@@ -1,0 +1,72 @@
+Readme for the min-cut algorithm code
+
+This code does the following:
+  - graph_file.h parses a "graph file" in the following format:
+      node1 neighbor1 neighbor2 ...
+      node2 neighbor1 neighbor2 ...
+      ...
+      nodeN neighbor1 neighbor2 ...
+
+  - graph.h/c creates the data structure for the graph
+    --general structure:
+      -nodes kept in array
+      -node:
+        -void* key
+        -linked list of pointers to edges
+        -keeps list of previously merged nodes
+      -edge:
+        -kept in an array
+        -void* key for edge values if necessary
+        -ptr to "from" node
+        -ptr to "to" node
+    --provides following operations:
+      -create graph from nodes and neighbors
+      -remove edge s-t in O(j+k) time, where
+          -j is # of neighbors of node s
+          -k is # of neighbors of node t
+       This is essentially O(1) time.
+      -remove loops from a node
+      -Given an edge n, merge edges s-t connected by n
+        -O(1) look up time
+        -O(j+k) removal time (as before).
+      -Search for a void* key, given a compare function pointer
+      -Search for a particular node given the address.
+    
+  - min_cut.h/c finds a min cut of a given graph.
+    --note: destroys graph in process
+    - uses random numbers to select edges and remove until |V| == 2.
+
+
+Design decisions:
+1. Careful consideration given to how to store edges.  Essentially, we needed:
+  - ~O(1) removal and search time with an index.  We get this two ways:
+    -- 1. Simple array to store edges. (O(1) lookup with edge index).
+    -- 2. To delete edge from array, we swap with last element and decrement
+          the total number of edges (O(1)).
+    -- 3. Keep pointers to both sides of the edge.  This allows us to 
+          find exactly which nodes are affected by edge removal in O(1) time.
+    -- 4. To remove the edge from a node, we perform O(j+k) searches, where
+          j is |E| for head and k is |E| for tail.  For small numbers, this
+          is negligable.
+    -- 5. Edges in nodes are stored as linked list, so once the edge is found
+          we can delete in O(1) time.
+
+Lessons learned:
+
+1. Store indices instead of pointers in a node's edge list and the edge list itself.
+   This would alleviate a lot of memory corruption issues encountered, such as:
+   - misuse of realloc (using # of objects instead of total size).
+   - not accounting for realloc moving the array to a new section of memory, which
+     invalidates all pointers to the edge list.
+   - another misues of realloc, losing the original pointer during assigment.
+     (should use temp pointer).
+   - Tons of redirection, which gets very annoying and hard to decipher.
+
+2. Do not use void* for keys.
+   - yes, it does make it convenient, but the problems are:
+    -- 1. it is yet another pointer in the long line of indirection.
+    -- 2. No proof that what you're dereferencing is correct.
+    -- 3. Having an array of arrays of void pointers gives you void ***array.
+
+  Instead: make a key struct that is defined by user, if using C.  Otherwise use
+  generics.
